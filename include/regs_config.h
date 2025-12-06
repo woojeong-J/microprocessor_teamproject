@@ -7,7 +7,7 @@
 #define PCC_PORTB 	*((volatile unsigned*)(PCC_BASE + 0X128))
 #define PCC_PORTC 	*((volatile unsigned*)(PCC_BASE + 0X12C))
 #define PCC_PORTD 	*((volatile unsigned*)(PCC_BASE + 0X130))
-#define PCC_PORTE 	*((volatile unsigned*)(PCC_BASE + 0X134)) 
+#define PCC_PORTE 	*((volatile unsigned*)(PCC_BASE + 0X134))
 #define PCC_FTM2 	*((volatile unsigned*)(PCC_BASE + 0XE8))
 #define PCC_ADC0    *((volatile unsigned*)(PCC_BASE + 0xEC))
 #define PCC_LPIT    *((volatile unsigned*)(PCC_BASE + 0xDC))
@@ -76,7 +76,7 @@
 #define NVIC_IPR_BASE       (0xE000E400)
 #define NVIC_IPR61          *((volatile unsigned char*)(NVIC_IPR_BASE + 0x3D)) // 61 = 0x3D
 #define NVIC_IPR48          *((volatile unsigned char*)(NVIC_IPR_BASE + 0x30)) // 48 = 0x30
-#define NVIC_IPR56          *((volatile unsigned char*)(NVIC_IPR_BASE + 0x38)) // 56 = 0x38
+#define NVIC_IPR59          *((volatile unsigned char*)(NVIC_IPR_BASE + 0x3B)) // 56 = 0x38
 
 #define IRQC_BITS 	16
 #define ISF_BIT 	24
@@ -104,12 +104,22 @@
 #define GPIOA_PCOR (*((volatile unsigned*)(GPIOA_BASE + 0x8)))
 #define GPIOA_PTOR (*((volatile unsigned*)(GPIOA_BASE + 0xC)))
 #define GPIOA_PDDR (*((volatile unsigned*)(GPIOA_BASE + 0x14)))
+#define GPIOA_PDIR (*((volatile unsigned*)(GPIOA_BASE + 0x10)))
 
 #define GPIOC_BASE (0x400FF080)
 #define GPIOC_PSOR (*((volatile unsigned*)(GPIOC_BASE + 0x4)))
 #define GPIOC_PCOR (*((volatile unsigned*)(GPIOC_BASE + 0x8)))
 #define GPIOC_PTOR (*((volatile unsigned*)(GPIOC_BASE + 0xC)))
 #define GPIOC_PDDR (*((volatile unsigned*)(GPIOC_BASE + 0x14)))
+#define GPIOC_PDIR (*((volatile unsigned*)(GPIOC_BASE + 0x10)))
+
+#define GPIOB_BASE (0x400FF040)
+#define GPIOB_PSOR (*((volatile unsigned*)(GPIOB_BASE + 0x4)))
+#define GPIOB_PCOR (*((volatile unsigned*)(GPIOB_BASE + 0x8)))
+#define GPIOB_PTOR (*((volatile unsigned*)(GPIOB_BASE + 0xC)))
+#define GPIOB_PDDR (*((volatile unsigned*)(GPIOB_BASE + 0x14)))
+#define GPIOB_PDIR (*((volatile unsigned*)(GPIOB_BASE + 0x10)))
+
 
 
 #endif
