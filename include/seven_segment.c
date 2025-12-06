@@ -1,261 +1,335 @@
-/*
- * seven_segment.c
- *
- *  Created on: 2025. 10. 17.
- *      Author: wooju
- */
 #include "seven_segment.h"
+#include "regs_config.h"
+#include "clocks_and_modes.h"
+#include "Motor.h"
 
-
-void PORT_init_sevensegment()
+void PORT_init_Segment()
 {
-    /* Initialization for GPIO Output */
-    PCC_PORTB |= (1<<CGC_BIT);        /* Enable clocks to peripherals (PORT modules) */
-                                      /* Enable clock to PORT B */
+	PCC_PORTA |= (1<<CGC_BIT);
 
-    PORTB_PCR8  &= ~((0b111)<<MUX_BITS);  /* PORT B8: MUX = Alternative1 (GPIO) */
-    PORTB_PCR8  |=  ((0b001)<<MUX_BITS);
-    PORTB_PCR9  &= ~((0b111)<<MUX_BITS);  /* PORT B9: MUX = Alternative1 (GPIO) */
-    PORTB_PCR9  |=  ((0b001)<<MUX_BITS);
-    PORTB_PCR10 &= ~((0b111)<<MUX_BITS);  /* PORT B10: MUX = Alternative1 (GPIO) */
-    PORTB_PCR10 |=  ((0b001)<<MUX_BITS);
-    PORTB_PCR11 &= ~((0b111)<<MUX_BITS);  /* PORT B11: MUX = Alternative1 (GPIO) */
-    PORTB_PCR11 |=  ((0b001)<<MUX_BITS);
-    PORTB_PCR12 &= ~((0b111)<<MUX_BITS);  /* PORT B12: MUX = Alternative1 (GPIO) */
-    PORTB_PCR12 |=  ((0b001)<<MUX_BITS);
-    PORTB_PCR13 &= ~((0b111)<<MUX_BITS);  /* PORT B13: MUX = Alternative1 (GPIO) */
-    PORTB_PCR13 |=  ((0b001)<<MUX_BITS);
+	PORTA_PCR12 &= ~((0b111)<<MUX_BITS);
+	PORTA_PCR12 |= (1<<MUX_BITS);
 
-    GPIOB_PDDR |= (1<<PTB8) | (1<<PTB9) | (1<<PTB10) | (1<<PTB11) | (1<<PTB12) | (1<<PTB13);
-                                      /* PORT B8-13: GPIO output */
+	GPIOA_PDDR &= ~(1<<PTA12);
 
+	PORTA_PCR12 &= ~((0b1111)<<IRQC_BITS);
+	PORTA_PCR12 |= ((0b1001)<<IRQC_BITS);
 
+	PCC_PORTB |= (1<<CGC_BIT);
 
-    /* Initialization for GPIO Output */
-    PCC_PORTD |= (1<<CGC_BIT);        /* Enable clocks to peripherals (PORT modules) */
-                                      /* Enable clock to PORT D */
+	PORTB_PCR8	&=	~((0b111)<<MUX_BITS);
+	PORTB_PCR8	|=	((0b001)<<MUX_BITS);
+	PORTB_PCR9	&=	~((0b111)<<MUX_BITS);
+	PORTB_PCR9	|=	((0b001)<<MUX_BITS);
+	PORTB_PCR10	&=	~((0b111)<<MUX_BITS);
+	PORTB_PCR10	|=	((0b001)<<MUX_BITS);
+	PORTB_PCR11	&=	~((0b111)<<MUX_BITS);
+	PORTB_PCR11	|=	((0b001)<<MUX_BITS);
+	PORTB_PCR12	&=	~((0b111)<<MUX_BITS);
+	PORTB_PCR12	|=	((0b001)<<MUX_BITS);
+	PORTB_PCR13	&=	~((0b111)<<MUX_BITS);
+	PORTB_PCR13	|=	((0b01)<<MUX_BITS);
 
-    PORTD_PCR5  &= ~((0b111)<<MUX_BITS);  /* PORT D5: MUX = Alternative1 (GPIO) */
-    PORTD_PCR5  |=  ((0b001)<<MUX_BITS);
-    PORTD_PCR10 &= ~((0b111)<<MUX_BITS);  /* PORT D10: MUX = Alternative1 (GPIO) */
-    PORTD_PCR10 |=  ((0b001)<<MUX_BITS);
-    PORTD_PCR11 &= ~((0b111)<<MUX_BITS);  /* PORT D11: MUX = Alternative1 (GPIO) */
-    PORTD_PCR11 |=  ((0b001)<<MUX_BITS);
-    PORTD_PCR12 &= ~((0b111)<<MUX_BITS);  /* PORT D12: MUX = Alternative1 (GPIO) */
-    PORTD_PCR12 |=  ((0b001)<<MUX_BITS);
-    PORTD_PCR13 &= ~((0b111)<<MUX_BITS);  /* PORT D13: MUX = Alternative1 (GPIO) */
-    PORTD_PCR13 |=  ((0b001)<<MUX_BITS);
-    PORTD_PCR14 &= ~((0b111)<<MUX_BITS);  /* PORT D14: MUX = Alternative1 (GPIO) */
-    PORTD_PCR14 |=  ((0b001)<<MUX_BITS);
+	GPIOB_PDDR	|=	(1<<PTB8) | (1<<PTB9) | (1<<PTB10)	|	(1<<PTB11) | (1<<PTB12) | (1<<PTB13);
 
-    GPIOD_PDDR |= (1<<PTD5) | (1<<PTD10) | (1<<PTD11) | (1<<PTD12) | (1<<PTD13) | (1<<PTD14);
-                                      /* PORT D5, D10-14: GPIO output */
+	PCC_PORTD |= (1<<CGC_BIT);
 
-    /* Initialization for GPIO Output */
-    PCC_PORTE |= (1<<CGC_BIT);        /* Enable clocks to peripherals (PORT modules) */
-                                      /* Enable clock to PORT E */
+	PORTD_PCR3	&=	~((0b111)<<MUX_BITS);
+	PORTD_PCR3	|=	((0b001)<<MUX_BITS);
+	PORTD_PCR5	&=	~((0b111)<<MUX_BITS);
+	PORTD_PCR5	|=	((0b001)<<MUX_BITS);
+	PORTD_PCR8	&=	~((0b111)<<MUX_BITS);
+	PORTD_PCR8	|=	((0b001)<<MUX_BITS);
+	PORTD_PCR9	&=	~((0b111)<<MUX_BITS);
+	PORTD_PCR9	|=	((0b001)<<MUX_BITS);
+	PORTD_PCR12	&=	~((0b111)<<MUX_BITS);
+	PORTD_PCR12	|=	((0b001)<<MUX_BITS);
+	PORTD_PCR13	&=	~((0b111)<<MUX_BITS);
+	PORTD_PCR13	|=	((0b001)<<MUX_BITS);
+	PORTD_PCR14	&=	~((0b111)<<MUX_BITS);
+	PORTD_PCR14	|=	((0b001)<<MUX_BITS);
 
-    PORTE_PCR15 &= ~((0b111)<<MUX_BITS);  /* PORT E15: MUX = Alternative1 (GPIO) */
-    PORTE_PCR15 |=  ((0b001)<<MUX_BITS);
-    PORTE_PCR16 &= ~((0b111)<<MUX_BITS);  /* PORT E16: MUX = Alternative1 (GPIO) */
-    PORTE_PCR16 |=  ((0b001)<<MUX_BITS);
-
-    GPIOE_PDDR |= (1<<PTE15) | (1<<PTE16);
-                                      /* PORT E15-16: GPIO output */
+	GPIOD_PDDR	|=	(1<<PTD3) | (1<<PTD5) | (1<<PTD8) | (1<<PTD9) | (1<<PTD12) | (1<<PTD13) | (1<<PTD14);
 }
+
+void NVIC_init_IRQs(void)
+{
+	NVIC_ICPR1 |= (1<<(48%32));
+	NVIC_ISER1 |= (1<<(48%32));
+	NVIC_IPR48 = 5;
+
+	NVIC_ICPR1 |= (1<<(59%32));
+	NVIC_ISER1 |= (1<<(59%32));
+	NVIC_IPR59 = 10;
+}
+
+void LPIT0_init(void)
+{
+	PCC_LPIT &= ~((0b111)<<PCS_BITS);
+	PCC_LPIT |= ((0b110)<<PCS_BITS);
+	PCC_LPIT |= (1<<CGC_BIT);
+
+	LPIT_MCR |= (1<<M_CEN_BIT);
+
+	LPIT_MIER |= (1<<TIE0_BIT);
+
+	LPIT_TVAL0 = 20000;
+
+	LPIT_TCTRL0 &= ~((0b11)<<MODE_BITS);
+	LPIT_TCTRL0 |= (1<<T_EN_BIT);
+}
+
 void set7segmentNumClear()
 {
-    GPIOD_PCOR |= (1<<PTD10) | (1<<PTD11) | (1<<PTD12) | (1<<PTD5) | (1<<PTD13) | (1<<PTD14);
-    GPIOE_PCOR |= (1<<PTE15) | (1<<PTE16);
+	GPIOD_PCOR |= (1<<PTD3) | (1<<PTD5) | (1<<PTD8) | (1<<PTD9) | (1<<PTD12) | (1<<PTD13) | (1<<PTD14);
 }
 
 void set7segmentNum0()
 {
-    GPIOD_PSOR |= (1<<PTD10) | (1<<PTD11) | (1<<PTD12) | (1<<PTD5) | (1<<PTD13) | (1<<PTD14);
-    GPIOE_PCOR |= (1<<PTE15) | (1<<PTE16);
+	GPIOD_PSOR |= (1<<PTD5) | (1<<PTD8) | (1<<PTD9) | (1<<PTD12) | (1<<PTD13) | (1<<PTD14);
+	GPIOD_PCOR |= (1<<PTD3);
 }
 
 void set7segmentNum1()
 {
-    GPIOD_PSOR |= (1<<PTD11) | (1<<PTD12);
-    GPIOD_PCOR |= (1<<PTD10) | (1<<PTD5) | (1<<PTD13) | (1<<PTD14);
-    GPIOE_PCOR |= (1<<PTE15) | (1<<PTE16);
+	GPIOD_PSOR |= (1<<PTD9) | (1<<PTD12);
+	GPIOD_PCOR |= (1<<PTD3) | (1<<PTD5) | (1<<PTD8) | (1<<PTD13) | (1<<PTD14);
 }
 
 void set7segmentNum2()
 {
-    GPIOD_PSOR |= (1<<PTD10) | (1<<PTD11) | (1<<PTD5) | (1<<PTD13);
-    GPIOD_PCOR |= (1<<PTD12) | (1<<PTD14);
-    GPIOE_PSOR |= (1<<PTE15);
-    GPIOE_PCOR |= (1<<PTE16);
+	GPIOD_PSOR |= (1<<PTD3) | (1<<PTD5) | (1<<PTD8) | (1<<PTD9) | (1<<PTD13);
+	GPIOD_PCOR |= (1<<PTD12) | (1<<PTD14);
 }
 
 void set7segmentNum3()
 {
-    GPIOD_PSOR |= (1<<PTD10) | (1<<PTD11) | (1<<PTD12) | (1<<PTD5);
-    GPIOD_PCOR |= (1<<PTD13) | (1<<PTD14);
-    GPIOE_PSOR |= (1<<PTE15);
-    GPIOE_PCOR |= (1<<PTE16);
+	GPIOD_PSOR |= (1<<PTD3) | (1<<PTD5) | (1<<PTD8) | (1<<PTD9) | (1<<PTD12);
+	GPIOD_PCOR |= (1<<PTD13) | (1<<PTD14);
 }
 
 void set7segmentNum4()
 {
-    GPIOD_PSOR |= (1<<PTD11) | (1<<PTD12)| (1<<PTD14);
-    GPIOD_PCOR |= (1<<PTD10) | (1<<PTD5) | (1<<PTD13);
-    GPIOE_PSOR |= (1<<PTE15);
-    GPIOE_PCOR |= (1<<PTE16);
+	GPIOD_PSOR |= (1<<PTD3) | (1<<PTD9) | (1<<PTD12) | (1<<PTD14);
+	GPIOD_PCOR |= (1<<PTD5) | (1<<PTD8) | (1<<PTD13);
 }
 
 void set7segmentNum5()
 {
-    GPIOD_PSOR |= (1<<PTD10) | (1<<PTD12) | (1<<PTD5) | (1<<PTD14);
-    GPIOD_PCOR |= (1<<PTD11) | (1<<PTD13);
-    GPIOE_PSOR |= (1<<PTE15);
-    GPIOE_PCOR |= (1<<PTE16);
+	GPIOD_PSOR |= (1<<PTD3) | (1<<PTD5) | (1<<PTD8) | (1<<PTD12) | (1<<PTD14);
+	GPIOD_PCOR |= (1<<PTD9) | (1<<PTD13);
 }
 
 void set7segmentNum6()
 {
-    GPIOD_PSOR |= (1<<PTD10) | (1<<PTD12) | (1<<PTD5) | (1<<PTD13) | (1<<PTD14);
-    GPIOD_PCOR |= (1<<PTD11);
-    GPIOE_PSOR |= (1<<PTE15);
-    GPIOE_PCOR |= (1<<PTE16);
+	GPIOD_PSOR |= (1<<PTD3) | (1<<PTD5) | (1<<PTD8) | (1<<PTD12) | (1<<PTD13) | (1<<PTD14);
+	GPIOD_PCOR |= (1<<PTD9);
 }
 
 void set7segmentNum7()
 {
-    GPIOD_PSOR |= (1<<PTD10) | (1<<PTD11) | (1<<PTD12) | (1<<PTD14);
-    GPIOD_PCOR |= (1<<PTD5) | (1<<PTD13);
-    GPIOE_PCOR |= (1<<PTE15) | (1<<PTE16);
+	GPIOD_PSOR |= (1<<PTD8) | (1<<PTD9) | (1<<PTD12) | (1<<PTD14);
+	GPIOD_PCOR |= (1<<PTD3) | (1<<PTD5) | (1<<PTD13);
 }
 
 void set7segmentNum8()
 {
-    GPIOD_PSOR |= (1<<PTD10) | (1<<PTD11) | (1<<PTD12) | (1<<PTD5) | (1<<PTD13) | (1<<PTD14);
-    GPIOE_PSOR |= (1<<PTE15);
-    GPIOE_PCOR |= (1<<PTE16);
+	GPIOD_PSOR |= (1<<PTD3) | (1<<PTD5) | (1<<PTD8) | (1<<PTD9) | (1<<PTD12) | (1<<PTD13) | (1<<PTD14);
 }
 
 void set7segmentNum9()
 {
-    GPIOD_PSOR |= (1<<PTD10) | (1<<PTD11) | (1<<PTD12) | (1<<PTD5) | (1<<PTD14);
-    GPIOD_PCOR |= (1<<PTD13);
-    GPIOE_PSOR |= (1<<PTE15);
-    GPIOE_PCOR |= (1<<PTE16);
+	GPIOD_PSOR |= (1<<PTD3) | (1<<PTD5) | (1<<PTD8) | (1<<PTD9) | (1<<PTD12) | (1<<PTD14);
+	GPIOD_PCOR |= (1<<PTD13);
+}
+
+void set7segmentDrive()
+{
+	GPIOD_PSOR |= (1<<PTD3) | (1<<PTD5) | (1<<PTD9) | (1<<PTD12) | (1<<PTD13);
+	GPIOD_PCOR |= (1<<PTD8) | (1<<PTD14);
+}
+
+void set7segmentReverse()
+{
+	GPIOD_PSOR |= (1<<PTD8) | (1<<PTD13) | (1<<PTD14);
+	GPIOD_PCOR |= (1<<PTD3) | (1<<PTD5) | (1<<PTD9) | (1<<PTD12);
+}
+
+void set7segmentCruise()
+{
+	GPIOD_PSOR |= (1<<PTD5) | (1<<PTD8) | (1<<PTD13) | (1<<PTD14);
+	GPIOD_PCOR |= (1<<PTD3) | (1<<PTD9) | (1<<PTD12);
 }
 
 void set7segmentNum(int num)
 {
 	switch(num)
 	{
-		case 0:
+		case 0 :
 			set7segmentNum0();
 			break;
-		case 1:
+
+		case 1 :
 			set7segmentNum1();
 			break;
-		case 2:
+
+		case 2 :
 			set7segmentNum2();
 			break;
-		case 3:
+
+		case 3 :
 			set7segmentNum3();
 			break;
-		case 4:
+
+		case 4 :
 			set7segmentNum4();
 			break;
-		case 5:
+
+		case 5 :
 			set7segmentNum5();
 			break;
-		case 6:
+
+		case 6 :
 			set7segmentNum6();
 			break;
-		case 7:
+
+		case 7 :
 			set7segmentNum7();
 			break;
-		case 8:
+
+		case 8 :
 			set7segmentNum8();
 			break;
-		case 9:
+
+		case 9 :
 			set7segmentNum9();
 			break;
+
 		default:
 			set7segmentNumClear();
-			break;
+	}
+}
+
+void set7segmentStr(char mode)
+{
+	switch(mode)
+	{
+    case 'd':
+    	set7segmentDrive();
+        break;
+
+    case 'r':
+    	set7segmentReverse();
+        break;
+
+    case 'c':
+    	set7segmentCruise();
+        break;
+
+    default:
+    	set7segmentNumClear();
+        break;
 	}
 }
 
 void displayDigitClear()
 {
-    set7segmentNumClear();
-    GPIOB_PCOR |= (1<<PTB8) | (1<<PTB9) | (1<<PTB10) | (1<<PTB11) | (1<<PTB12) | (1<<PTB13);
+	set7segmentNumClear();
+	GPIOB_PCOR |= (1<<PTB8) | (1<<PTB9) | (1<<PTB10) | (1<<PTB11) | (1<<PTB12) | (1<<PTB13);
 }
 
 void displayDigit1(int num)
 {
-    GPIOB_PSOR |= (1<<PTB8);
-    set7segmentNum(num);
+	GPIOB_PSOR |= (1<<PTB8);
+
+	set7segmentNum(num);
 }
 
 void displayDigit2(int num)
 {
-    GPIOB_PSOR |= (1<<PTB9);
-    set7segmentNum(num);
+	GPIOB_PSOR |= (1<<PTB9);
+
+	set7segmentNum(num);
 }
 
 void displayDigit3(int num)
 {
-    GPIOB_PSOR |= (1<<PTB10);
-    set7segmentNum(num);
-    //GPIOE_PSOR |= (1 << PTE16); // DP
+	GPIOB_PSOR |= (1<<PTB10);
+
+	set7segmentNum(num);
 }
 
 void displayDigit4(int num)
 {
-    GPIOB_PSOR |= (1<<PTB11);
-    set7segmentNum(num);
+	GPIOB_PSOR |= (1<<PTB11);
+
+	set7segmentNum(num);
 }
 
 void displayDigit5(int num)
 {
-    GPIOB_PSOR |= (1<<PTB12);
-    set7segmentNum(num);
+	GPIOB_PSOR |= (1<<PTB12);
+
+	set7segmentNum(num);
 }
 
-void displayDigit6(int num)
+void displayDigit6(char mode)
 {
-    GPIOB_PSOR |= (1<<PTB13);
-    set7segmentNum(num);
+	GPIOB_PSOR |= (1<<PTB13);
+
+	set7segmentStr(mode);
 }
 
-void displayDigitA1(int num)
+volatile char gear = 'd';
+volatile int distance =88;
+volatile int scan_index = 0;
+
+
+void PORTA_IRQHandler(void)
 {
-	int num1, num2, num3, num4, num5, num6;
+    if (gear == 'd')
+    {
+        gear = 'r';
+    }
+    else
+    {
+        gear = 'd';
+    }
 
-	num1 = num % 10; // 1의자리
-	num2 = (num / 10) % 10; // 10의자리
-	num3 = (num / 100) % 10; // 100의자리
-	num4 = (num / 1000) % 10; // 1000의자리
-	num5 = (num / 10000) % 10;
-	num6 = (num / 100000) % 10;
-
-
-	displayDigitClear();
-	displayDigit1(num1);
-
-	displayDigitClear();
-	displayDigit2(num2);
-
-	displayDigitClear();
-	displayDigit3(num3);
-
-	displayDigitClear();
-	displayDigit4(num4);
-
-	displayDigitClear();
-	displayDigit5(num5);
-
-	displayDigitClear();
-	displayDigit6(num6);
-
+    PORTA_PCR12 |= (1 << ISF_BIT);         /* Clear ISF BIT */
 }
 
+	void LPIT0_Ch0_IRQHandler(void)
+	{
+	    displayDigitClear();
+
+	    switch(scan_index)
+	    {
+	        case 0:
+	            displayDigit6(gear);
+	            break;
+	        case 1:
+	            displayDigit5(current_speed / 100);
+	            break;
+	        case 2:
+	            displayDigit4((current_speed / 10) % 10);
+	            break;
+	        case 3:
+	            displayDigit3(current_speed % 10);
+	            break;
+	        case 4:
+	            displayDigit2((distance / 10) % 10);
+	            break;
+	        case 5:
+	            displayDigit1(distance % 10);
+	            break;
+	    }
+
+	    scan_index++;
+	    if (scan_index > 5)
+	    {
+	        scan_index = 0; 
+	    }
+
+	    LPIT_MSR |= (1 << TIF0_BIT);
+	}
