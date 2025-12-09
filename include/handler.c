@@ -115,6 +115,11 @@ void LPIT0_Ch0_IRQHandler(void) //차량 제어 10ms
 void LPIT0_Ch1_IRQHandler(void) // 세그먼트 디스플레이 0.05ms
 {
 	displayDigitClear();
+    if(Start_Flag == 0)
+    {
+        LPIT_MSR |= (1 << TIF1_BIT);
+        return;
+    }
 
 	switch(scan_index)
 	{
