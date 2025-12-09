@@ -1,6 +1,8 @@
 #ifndef handler_h
 #define handler_h
 
+#include <stdint.h>
+
 void LPIT0_init(void);
 void NVIC_init_IRQs(void);
 void LPIT0_Ch0_IRQHandler(void);

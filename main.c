@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include "regs_config.h"
 #include "handler.h"
+#include "seven_segment.h"
 
 #define GEAR_P 0
 #define GEAR_D 1
