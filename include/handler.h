@@ -20,7 +20,6 @@ typedef enum {
 extern volatile int Start_Flag;
 extern volatile int Gear_Flag;
 extern volatile int Cruise_Flag;
-extern volatile int distance;
 extern volatile int gear;
 extern volatile int current_speed;
 extern volatile int Accel_Flag;

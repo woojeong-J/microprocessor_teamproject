@@ -12,6 +12,7 @@ static uint32_t dist_buffer = 0;
 #define DIST_THRESHOLD 5000000
 
 volatile int scan_index = 0;
+volatile int distance = 0;
 
 void adc_start(void)
 {

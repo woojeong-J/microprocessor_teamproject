@@ -4,13 +4,13 @@
 #include "clocks_and_modes.h"
 #include "handler.h"
 
-int current_speed = 0;
-int max_speed = 200000;
-int limited_speed = 0;
-int speed_time = 10;
-int Accel_Flag = 0;
-int Brake_Flag = 0;
-uint32_t adcResult = 0;
+volatile int current_speed = 0;
+volatile int max_speed = 200000;
+volatile int limited_speed = 0;
+volatile int speed_time = 10;
+volatile int Accel_Flag = 0;
+volatile int Brake_Flag = 0;
+volatile uint32_t adcResult = 0;
 
 void PORT_init_Motor(void)
 {
