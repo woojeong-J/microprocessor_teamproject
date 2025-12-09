@@ -17,22 +17,56 @@
 
 // PORT Registers
 #define PORTA_BASE 	(0x40049000)
-#define PORTA_PCR12 *((volatile unsigned*)(PORTA_BASE + 0x30))  //브레이크 버튼
+#define PORTA_PCR12 *((volatile unsigned*)(PORTA_BASE + 0x30))  //sw4 기어버튼
+#define PORTA_PCR13 *((volatile unsigned*)(PORTA_BASE + 0x34))  //sw5 시동버튼
 
 #define PORTB_BASE 	(0x4004A000)
 #define PORTB_PCR0 *((volatile unsigned*)(PORTB_BASE + 0x0)) //port B 0 - 가변 저항 값 읽기 (ADC)
+#define PORTB_PCR8	*((volatile unsigned*)(PORTB_BASE + 0x20)) //com1
+#define PORTB_PCR9	*((volatile unsigned*)(PORTB_BASE + 0x24)) //com2
+#define PORTB_PCR10	*((volatile unsigned*)(PORTB_BASE + 0x28)) //com3
+#define PORTB_PCR11	*((volatile unsigned*)(PORTB_BASE + 0x2C)) //com4
+#define PORTB_PCR12	*((volatile unsigned*)(PORTB_BASE + 0x30)) //com5
+#define PORTB_PCR13	*((volatile unsigned*)(PORTB_BASE + 0x34)) //com6
 
 #define PORTC_BASE 	(0x4004B000)
-#define PORTC_PCR17 *((volatile unsigned*)(PORTC_BASE + 0x44)) // 가속 버튼
+#define PORTC_PCR15 *((volatile unsigned*)(PORTC_BASE + 0x3C)) //sw1 오토크루즈 버튼
+#define PORTC_PCR16 *((volatile unsigned*)(PORTC_BASE + 0x40)) //sw2 브레이크 버튼
+#define PORTC_PCR17 *((volatile unsigned*)(PORTC_BASE + 0x44)) //sw3 가속버튼
 
 #define PORTD_BASE 	(0x4004C000)
 #define PORTD_PCR10 *((volatile unsigned*)(PORTD_BASE + 0x28)) //port D 10 - DC motor 제어 (PWM)
+#define PORTD_PCR3  *((volatile unsigned*)(PORTD_BASE + 0xC))  //seg a
+#define PORTD_PCR5	*((volatile unsigned*)(PORTD_BASE + 0x14)) //seg b
+#define PORTD_PCR8  *((volatile unsigned*)(PORTD_BASE + 0x20)) //seg c
+#define PORTD_PCR9	*((volatile unsigned*)(PORTD_BASE + 0x24)) //seg d
+#define PORTD_PCR12	*((volatile unsigned*)(PORTD_BASE + 0x30)) //seg e
+#define PORTD_PCR13	*((volatile unsigned*)(PORTD_BASE + 0x34)) //seg f
+#define PORTD_PCR14	*((volatile unsigned*)(PORTD_BASE + 0x38)) //seg g
 
 #define PORTE_BASE 	(0x4004D000)
 
-#define PTA12 12
+#define PTA12 12 // sw4 기어버튼
+#define PTA13 13 // sw5 시동버튼
 
-#define PTC17 17
+#define PTC15 15 // sw1 오토크루즈 버튼
+#define PTC16 16 // sw2 브레이크 버튼
+#define PTC17 17 // sw3 가속버튼
+
+#define PTB8	8	//com1
+#define PTB9	9	//com2
+#define PTB10	10	//com3
+#define PTB11	11	//com4
+#define PTB12	12	//com5
+#define PTB13	13	//com6
+
+#define PTD8	8   //A
+#define	PTD9	9	//B
+#define PTD12	12	//C
+#define PTD5	5	//D
+#define PTD13	13	//E
+#define PTD14	14	//F
+#define	PTD3	3	//G
 
 #define MUX_BITS 	8
 
@@ -57,12 +91,26 @@
 #define LPIT_MCR	*(volatile unsigned*)(LPIT_BASE + 0x8)
 #define LPIT_MSR	*(volatile unsigned*)(LPIT_BASE + 0xC)
 #define LPIT_MIER	*(volatile unsigned*)(LPIT_BASE + 0x10)
+
 #define LPIT_TVAL0	*(volatile unsigned*)(LPIT_BASE + 0x20)
 #define LPIT_TCTRL0	*(volatile unsigned*)(LPIT_BASE + 0x28)
 
+#define LPIT_TVAL1	*(volatile unsigned*)(LPIT_BASE + 0x30)
+#define LPIT_TCTRL1	*(volatile unsigned*)(LPIT_BASE + 0x38)
+
+#define LPIT_TVAL2    *(volatile unsigned*)(LPIT_BASE + 0x40)
+#define LPIT_TCTRL2   *(volatile unsigned*)(LPIT_BASE + 0x48)
+
 #define M_CEN_BIT 	0
+
 #define TIF0_BIT 	0
+#define TIF1_BIT 	1
+#define TIF2_BIT 	2
+
 #define TIE0_BIT 	0
+#define TIE1_BIT 	1
+#define TIE2_BIT 	2
+
 #define MODE_BITS   2
 #define T_EN_BIT 	0
 
@@ -120,6 +168,12 @@
 #define GPIOB_PDDR (*((volatile unsigned*)(GPIOB_BASE + 0x14)))
 #define GPIOB_PDIR (*((volatile unsigned*)(GPIOB_BASE + 0x10)))
 
+#define GPIOD_BASE	(0x400FF0C0)
+#define GPIOD_PSOR (*((volatile unsigned*)(GPIOD_BASE + 0x4)))
+#define GPIOD_PCOR (*((volatile unsigned*)(GPIOD_BASE + 0x8)))
+#define GPIOD_PTOR (*((volatile unsigned*)(GPIOD_BASE + 0xC)))
+#define GPIOD_PDDR (*((volatile unsigned*)(GPIOD_BASE + 0x14)))
+#define GPIOD_PDIR (*((volatile unsigned*)(GPIOD_BASE + 0x10)))
 
 
 #endif

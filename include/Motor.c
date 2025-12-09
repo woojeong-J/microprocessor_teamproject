@@ -2,6 +2,7 @@
 #include "regs_config.h"
 #include <stdint.h>
 #include "clocks_and_modes.h"
+#include "handler.h"
 
 int current_speed = 0;
 int max_speed = 200000;
@@ -23,26 +24,20 @@ void PORT_init_Motor(void)
 
 
 	PCC_PORTC |= (1<<CGC_BIT);
+	// 브레이크 버튼
+	PORTC_PCR16 &= ~((0b111)<<MUX_BITS);
+	PORTC_PCR16 |= (1<<MUX_BITS);  // GPIO
+	PORTC_PCR16 &= ~((0b1111)<<IRQC_BITS);	 
+	PORTC_PCR16 |= (0b1011<<IRQC_BITS); //either rising or falling edge
+	PORTC_PCR16 |= (1<<1) | (1<<0);
+	GPIOC_PDDR &= ~(1<<PTC16); // Input
+	// 가속 버튼
 	PORTC_PCR17 &= ~((0b111)<<MUX_BITS);
 	PORTC_PCR17 |= (1<<MUX_BITS);  // GPIO
 	PORTC_PCR17 &= ~((0b1111)<<IRQC_BITS);
-	PORTC_PCR17 |= (0b1011<<IRQC_BITS);
-
+	PORTC_PCR17 |= (0b1011<<IRQC_BITS); //either rising or falling edge
 	PORTC_PCR17 |= (1<<1) | (1<<0);
-
 	GPIOC_PDDR &= ~(1<<PTC17); // Input
-
-	PCC_PORTA |= (1<<CGC_BIT);
-	PORTA_PCR12 &= ~((0b111)<<MUX_BITS);
-	PORTA_PCR12 |= (1<<MUX_BITS);  // GPIO
-	PORTA_PCR12 &= ~((0b1111)<<IRQC_BITS);
-	PORTA_PCR12 |= (0b1011<<IRQC_BITS);
-
-	PORTA_PCR12 |= (1<<1) | (1<<0);
-
-	GPIOA_PDDR &= ~(1<<PTA12); // Input
-
-
 }
 
 void ADC0_init(void)
@@ -100,91 +95,6 @@ void FTM2_CH0_PWM(void)
 
 	FTM2_SC |= ((0b11)<<CLKS_BITS);
 }
-
-void LPIT0_init(void)
-{
-	PCC_LPIT &= ~((0b111)<<PCS_BITS);
-	PCC_LPIT |= ((0b110)<<PCS_BITS);
-	PCC_LPIT |= (1<<CGC_BIT);
-
-	LPIT_MCR |= (1<<M_CEN_BIT);
-
-	LPIT_MIER |= (1<<TIE0_BIT);
-
-	LPIT_TVAL0 = 400000; // 80MHz / 2 / 400000 = 100Hz -> 10ms
-
-	LPIT_TCTRL0 &= ~((0b11)<<MODE_BITS);
-	LPIT_TCTRL0 |= (1<<T_EN_BIT);
-}
-
-void NVIC_init_IRQs(void)
-{
-	NVIC_ICPR1 |= (1<<(61 % 32)); // PORTC IRQ
-	NVIC_ISER1 |= (1<<(61 % 32));
-	NVIC_IPR61 = 10;
-
-	NVIC_ICPR1 |= (1<<(48 % 32)); // LPIT0 IRQ
-	NVIC_ISER1 |= (1<<(48 % 32));
-	NVIC_IPR48 = 10;
-
-	NVIC_ICPR1 |= (1<<(59 % 32)); // PORTA IRQ
-	NVIC_ISER1 |= (1<<(59 % 32));
-	NVIC_IPR59 = 10;
-}
-
-void LPIT0_Ch0_IRQHandler(void)
-{
-    // Flag Clear (생략)
-
-    // 이 함수가 10ms마다 실행되므로, DRV_Control이 선형적으로 속도를 갱신
-    if (Accel_Flag == 1) {
-        DRV_Control();
-    } else if (Brake_Flag == 1) {
-        // 급제동 로직
-        DRV_Brake_Control();
-    } else {
-        // 타력 주행 로직
-        DRV_Coasting_Control();
-    }
-
-
-	adc_start();
-	adcResult = read_adc_chx(); //가변 저항 값 0~ 4095
-	LPIT_MSR |= (1<<TIF0_BIT);
-}
-
-void PORTC_IRQHandler(void)
-{
-	// 가속 버튼 인터럽트 핸들러
-	if((GPIOC_PDIR & (1<<PTC17)) == 0) // Low = 눌림
-	    {
-	        Accel_Flag = 1;
-	        Brake_Flag = 0;
-	    }
-	    else // High = 떼짐
-	    {
-	        Accel_Flag = 0; // 가속 중지 (Coasting)
-	    }
-
-	    PORTC_PCR17 |= (1<<ISF_BIT); // 플래그 클리어
-}
-
-void PORTA_IRQHandler(void)
-{
-	// 브레이크 버튼 인터럽트 핸들러
-	if((GPIOA_PDIR & (1<<PTA12)) == 0) // Low = 눌림
-	    {
-	        Accel_Flag = 0;
-	        Brake_Flag = 1; // 브레이크 작동
-	    }
-	    else // High = 떼짐
-	    {
-	        Brake_Flag = 0; // 브레이크 해제 (Coasting)
-	    }
-
-	    PORTA_PCR12 |= (1<<ISF_BIT); // 플래그 클리어
-}
-
 
 void DRV_Control()
 {

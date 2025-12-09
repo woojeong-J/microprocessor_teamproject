@@ -18,12 +18,4 @@ uint32_t read_adc_chx(void);
 void FTM2_CH0_PWM(void);
 
 
-
-extern int current_speed;
-extern int max_speed;
-extern int limited_speed;
-extern int speed_time;
-extern int Accel_Flag;
-extern int Brake_Flag;
-
 #endif

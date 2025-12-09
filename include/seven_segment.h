@@ -18,12 +18,14 @@ void set7segmentNum9();
 void set7segmentDrive();
 void set7segmentReverse();
 void set7segmentNum(int num);
-void set7segmentStr(char mode);
+void set7segmentStr(int gear);
 void displayDigit1(int num);
 void displayDigit2(int num);
 void displayDigit3(int num);
 void displayDigit4(int num);
 void displayDigit5(int num);
-void displayDigit6(char mode);
+void displayDigit6(int gear);
+
+extern volatile int gear;
 
 #endif
