@@ -38,6 +38,29 @@ void PORT_init_Motor(void)
 	PORTC_PCR17 |= (0b1011<<IRQC_BITS); //either rising or falling edge
 	PORTC_PCR17 |= (1<<1) | (1<<0);
 	GPIOC_PDDR &= ~(1<<PTC17); // Input
+	// 오토크루즈 버튼
+	PORTC_PCR15 &= ~((0b111)<<MUX_BITS);
+	PORTC_PCR15 |= (1<<MUX_BITS);  // GPIO
+	PORTC_PCR15 &= ~((0b1111)<<IRQC_BITS);
+	PORTC_PCR15 |= (0b1010<<IRQC_BITS); //falling edge
+	PORTC_PCR15 |= (1<<1) | (1<<0);
+	GPIOC_PDDR &= ~(1<<PTC15); // Input
+
+	PCC_PORTA |= (1<<CGC_BIT);
+	// 기어버튼
+	PORTA_PCR12 &= ~((0b111)<<MUX_BITS);
+	PORTA_PCR12 |= (1<<MUX_BITS);  // GPIO
+	PORTA_PCR12 &= ~((0b1111)<<IRQC_BITS);
+	PORTA_PCR12 |= (0b1010<<IRQC_BITS); //falling edge
+	PORTA_PCR12 |= (1<<1) | (1<<0);
+	GPIOA_PDDR &= ~(1<<PTA12); // Input
+	// 시동버튼
+	PORTA_PCR13 &= ~((0b111)<<MUX_BITS);
+	PORTA_PCR13 |= (1<<MUX_BITS);  // GPIO
+	PORTA_PCR13 &= ~((0b1111)<<IRQC_BITS);
+	PORTA_PCR13 |= (0b1010<<IRQC_BITS); //falling edge
+	PORTA_PCR13 |= (1<<1) | (1<<0);
+	GPIOA_PDDR &= ~(1<<PTA13); // Input
 }
 
 void ADC0_init(void)
@@ -59,20 +82,6 @@ void ADC0_init(void)
     ADC0_CFG2 |= (12<<SMPLTS_BITS);
 
     ADC0_SC2 &= ~(1<<ADTRG_BIT);                /* ADTRG=0: SW trigger */
-}
-
-void adc_start(void)
-{
-	ADC0_SC1A &= ~((0b111111)<<ADCH_BITS);
-	ADC0_SC1A |= (ADC0_SE4<<ADCH_BITS);
-
-}
-
-uint32_t read_adc_chx(void)
-{
-	while((ADC0_SC1A & (1<<COCO_BIT))==0){}
-
-	return ADC0_RA;
 }
 
 void FTM2_CH0_PWM(void)

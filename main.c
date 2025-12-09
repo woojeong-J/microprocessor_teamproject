@@ -25,6 +25,7 @@ int main(void)
 	SPLL_init_160MHz();
 	NormalRUNmode_80MHz();
 	PORT_init_Motor();
+	PORT_init_Segment();
 	FTM2_CH0_PWM();
 	ADC0_init();
 	NVIC_init_IRQs();

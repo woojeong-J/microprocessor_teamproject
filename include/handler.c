@@ -4,7 +4,28 @@
 #include "Motor.h" 
 #include "seven_segment.h"
 
+static uint32_t dist_buffer = 0;
+// [튜닝 포인트] 이 숫자로 거리 올라가는 속도를 조절합니다.
+// 숫자가 클수록 거리가 천천히 올라갑니다.
+// 200,000 (200km/h) 속도일 때 10ms마다 더해지므로, 1초에 20,000,000이 쌓입니다.
+// 아래 값으로 설정하면 200km/h일 때 1초에 숫자가 약 2~4 정도 올라갑니다. (적당한 데모 속도)
+#define DIST_THRESHOLD 5000000
+
 volatile int scan_index = 0;
+
+void adc_start(void)
+{
+	ADC0_SC1A &= ~((0b111111)<<ADCH_BITS);
+	ADC0_SC1A |= (ADC0_SE4<<ADCH_BITS);
+
+}
+
+uint32_t read_adc_chx(void)
+{
+	while((ADC0_SC1A & (1<<COCO_BIT))==0){}
+
+	return ADC0_RA;
+}
 
 void LPIT0_init(void)
 {
@@ -58,6 +79,9 @@ void NVIC_init_IRQs(void)
 
 void LPIT0_Ch0_IRQHandler(void) //차량 제어 10ms
 {
+    adc_start();
+	adcResult = read_adc_chx(); //가변 저항 값 0~ 4095
+
     // 이 함수가 10ms마다 실행되므로, DRV_Control이 선형적으로 속도를 갱신
     if (Accel_Flag == 1) {
         DRV_Control();
@@ -69,9 +93,21 @@ void LPIT0_Ch0_IRQHandler(void) //차량 제어 10ms
         DRV_Coasting_Control();
     }
 
+    if (current_state == STATE_D && current_speed > 0)
+    {
+        // 1. 현재 속도에 비례하여 거리를 누적
+        dist_buffer += current_speed; 
 
-	adc_start();
-	adcResult = read_adc_chx(); //가변 저항 값 0~ 4095
+        // 2. 일정 임계값을 넘으면 거리 1 증가 및 버퍼 초기화
+        if (dist_buffer >= DIST_THRESHOLD)
+        {
+            distance++;       // 거리 1 증가
+            dist_buffer = 0;  // 버퍼 초기화
+            
+            if(distance > 99) distance = 0; // 0~99 반복
+        }
+    }
+
 	LPIT_MSR |= (1<<TIF0_BIT);
 }
 
@@ -85,13 +121,13 @@ void LPIT0_Ch1_IRQHandler(void) // 세그먼트 디스플레이 0.05ms
 	    	displayDigit6(gear);
 	        break;
 	    case 1:
-	        displayDigit5(current_speed / 100);
+	        displayDigit5(current_speed / 100000); //current_speed = 198000 -> /100000 = 1
 	        break;
 	    case 2:
-	        displayDigit4((current_speed / 10) % 10);
+	        displayDigit4((current_speed / 10000) % 10); //current_speed = 198000 -> /10000 %10 = 9
 	        break;
 	    case 3:
-	        displayDigit3(current_speed % 10);
+	        displayDigit3((current_speed/ 1000) % 10); //current_speed = 198000 -> /1000 %10 = 8
 	        break;
 	    case 4:
 	        displayDigit2((distance / 10) % 10);

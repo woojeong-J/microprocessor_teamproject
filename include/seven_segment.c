@@ -6,16 +6,7 @@
 
 void PORT_init_Segment()
 {
-	PCC_PORTA |= (1<<CGC_BIT);
-
-	PORTA_PCR12 &= ~((0b111)<<MUX_BITS);
-	PORTA_PCR12 |= (1<<MUX_BITS);
-
-	GPIOA_PDDR &= ~(1<<PTA12);
-
-	PORTA_PCR12 &= ~((0b1111)<<IRQC_BITS);
-	PORTA_PCR12 |= ((0b1001)<<IRQC_BITS);
-
+	//com1~6 : PTB8~PTB13
 	PCC_PORTB |= (1<<CGC_BIT);
 
 	PORTB_PCR8	&=	~((0b111)<<MUX_BITS);
@@ -30,26 +21,26 @@ void PORT_init_Segment()
 	PORTB_PCR12	|=	((0b001)<<MUX_BITS);
 	PORTB_PCR13	&=	~((0b111)<<MUX_BITS);
 	PORTB_PCR13	|=	((0b01)<<MUX_BITS);
-
+	//com1~6 출력으로 설정
 	GPIOB_PDDR	|=	(1<<PTB8) | (1<<PTB9) | (1<<PTB10)	|	(1<<PTB11) | (1<<PTB12) | (1<<PTB13);
-
+	
 	PCC_PORTD |= (1<<CGC_BIT);
-
-	PORTD_PCR3	&=	~((0b111)<<MUX_BITS);
-	PORTD_PCR3	|=	((0b001)<<MUX_BITS);
-	PORTD_PCR5	&=	~((0b111)<<MUX_BITS);
-	PORTD_PCR5	|=	((0b001)<<MUX_BITS);
+	// 세그먼트 a~g : PTD8,PTD9,PTD12,PTD5,PTD13,PTD14,PTD3
 	PORTD_PCR8	&=	~((0b111)<<MUX_BITS);
 	PORTD_PCR8	|=	((0b001)<<MUX_BITS);
 	PORTD_PCR9	&=	~((0b111)<<MUX_BITS);
 	PORTD_PCR9	|=	((0b001)<<MUX_BITS);
 	PORTD_PCR12	&=	~((0b111)<<MUX_BITS);
 	PORTD_PCR12	|=	((0b001)<<MUX_BITS);
+	PORTD_PCR5	&=	~((0b111)<<MUX_BITS);
+	PORTD_PCR5	|=	((0b001)<<MUX_BITS);
 	PORTD_PCR13	&=	~((0b111)<<MUX_BITS);
 	PORTD_PCR13	|=	((0b001)<<MUX_BITS);
 	PORTD_PCR14	&=	~((0b111)<<MUX_BITS);
 	PORTD_PCR14	|=	((0b001)<<MUX_BITS);
-
+	PORTD_PCR3	&=	~((0b111)<<MUX_BITS);
+	PORTD_PCR3	|=	((0b001)<<MUX_BITS);
+	//세그먼트 a~g 출력으로 설정
 	GPIOD_PDDR	|=	(1<<PTD3) | (1<<PTD5) | (1<<PTD8) | (1<<PTD9) | (1<<PTD12) | (1<<PTD13) | (1<<PTD14);
 }
 
@@ -264,7 +255,3 @@ void set7segmentStr(int gear)
         break;
 	}
 }
-
-
-
-
