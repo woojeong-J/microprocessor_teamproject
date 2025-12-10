@@ -27,7 +27,7 @@ void PORT_init_Motor(void)
 	// 브레이크 버튼
 	PORTC_PCR16 &= ~((0b111)<<MUX_BITS);
 	PORTC_PCR16 |= (1<<MUX_BITS);  // GPIO
-	PORTC_PCR16 &= ~((0b1111)<<IRQC_BITS);	 
+	PORTC_PCR16 &= ~((0b1111)<<IRQC_BITS);
 	PORTC_PCR16 |= (0b1011<<IRQC_BITS); //either rising or falling edge
 	PORTC_PCR16 |= (1<<1) | (1<<0);
 	GPIOC_PDDR &= ~(1<<PTC16); // Input
@@ -42,7 +42,7 @@ void PORT_init_Motor(void)
 	PORTC_PCR15 &= ~((0b111)<<MUX_BITS);
 	PORTC_PCR15 |= (1<<MUX_BITS);  // GPIO
 	PORTC_PCR15 &= ~((0b1111)<<IRQC_BITS);
-	PORTC_PCR15 |= (0b1010<<IRQC_BITS); //falling edge
+	PORTC_PCR15 |= (0b1000<<IRQC_BITS); //logic 0
 	PORTC_PCR15 |= (1<<1) | (1<<0);
 	GPIOC_PDDR &= ~(1<<PTC15); // Input
 
@@ -51,14 +51,14 @@ void PORT_init_Motor(void)
 	PORTA_PCR12 &= ~((0b111)<<MUX_BITS);
 	PORTA_PCR12 |= (1<<MUX_BITS);  // GPIO
 	PORTA_PCR12 &= ~((0b1111)<<IRQC_BITS);
-	PORTA_PCR12 |= (0b1010<<IRQC_BITS); //falling edge
+	PORTA_PCR12 |= (0b1000<<IRQC_BITS); //logic 0
 	PORTA_PCR12 |= (1<<1) | (1<<0);
 	GPIOA_PDDR &= ~(1<<PTA12); // Input
 	// 시동버튼
 	PORTA_PCR13 &= ~((0b111)<<MUX_BITS);
 	PORTA_PCR13 |= (1<<MUX_BITS);  // GPIO
 	PORTA_PCR13 &= ~((0b1111)<<IRQC_BITS);
-	PORTA_PCR13 |= (0b1010<<IRQC_BITS); //falling edge
+	PORTA_PCR13 |= (0b1000<<IRQC_BITS); //logic 0
 	PORTA_PCR13 |= (1<<1) | (1<<0);
 	GPIOA_PDDR &= ~(1<<PTA13); // Input
 }

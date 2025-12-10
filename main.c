@@ -65,6 +65,7 @@ int main(void)
 				  	default:
 						break;
 			  	}
+			 	for(volatile int i=0; i<2000000; i++);
 			  	Gear_Flag = 0; // 기어 변경 플래그 초기화
 		    }
 	  	}

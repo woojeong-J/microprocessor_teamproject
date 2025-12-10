@@ -1,7 +1,7 @@
 #include "handler.h"
 #include "regs_config.h"
 #include "clocks_and_modes.h"
-#include "Motor.h" 
+#include "Motor.h"
 #include "seven_segment.h"
 
 static uint32_t dist_buffer = 0;
@@ -13,6 +13,8 @@ static uint32_t dist_buffer = 0;
 
 volatile int scan_index = 0;
 volatile int distance = 0;
+
+volatile int input_lock = 0;
 
 void adc_start(void)
 {
@@ -34,7 +36,7 @@ void LPIT0_init(void)
 	PCC_LPIT |= ((0b110)<<PCS_BITS);
 	PCC_LPIT |= (1<<CGC_BIT);
 
-	LPIT_MCR |= (1<<M_CEN_BIT); 
+	LPIT_MCR |= (1<<M_CEN_BIT);
     //여기까지 공통
     // ch0
 	LPIT_MIER |= (1<<TIE0_BIT); // Enable Timer 0 interrupt
@@ -67,8 +69,16 @@ void NVIC_init_IRQs(void)
 	NVIC_ISER1 |= (1<<(61 % 32));
 	NVIC_IPR61 = 10;
 
-	NVIC_ICPR1 |= (1<<(48 % 32)); // LPIT0 IRQ
+	NVIC_ICPR1 |= (1<<(48 % 32)); // LPIT0 ch 0 IRQ
 	NVIC_ISER1 |= (1<<(48 % 32));
+	NVIC_IPR48 = 10;
+
+	NVIC_ICPR1 |= (1<<(49 % 32)); // LPIT0 ch 1 IRQ
+	NVIC_ISER1 |= (1<<(49 % 32));
+	NVIC_IPR48 = 10;
+
+	NVIC_ICPR1 |= (1<<(50 % 32)); // LPIT0 ch 2 IRQ
+	NVIC_ISER1 |= (1<<(50 % 32));
 	NVIC_IPR48 = 10;
 
 	NVIC_ICPR1 |= (1<<(59 % 32)); // PORTA IRQ
@@ -80,6 +90,12 @@ void NVIC_init_IRQs(void)
 
 void LPIT0_Ch0_IRQHandler(void) //차량 제어 10ms
 {
+	if (input_lock > 0)
+	{
+	    input_lock--; // 10ms마다 1씩 감소
+	        // 0이 되면 자동으로 잠금 해제됨
+	}
+
     adc_start();
 	adcResult = read_adc_chx(); //가변 저항 값 0~ 4095
 
@@ -94,17 +110,17 @@ void LPIT0_Ch0_IRQHandler(void) //차량 제어 10ms
         DRV_Coasting_Control();
     }
 
-    if (current_state == STATE_D && current_speed > 0)
+    if ((current_state == STATE_D || current_state == STATE_CRUISE) && (current_speed > 0))
     {
         // 1. 현재 속도에 비례하여 거리를 누적
-        dist_buffer += current_speed; 
+        dist_buffer += current_speed;
 
         // 2. 일정 임계값을 넘으면 거리 1 증가 및 버퍼 초기화
         if (dist_buffer >= DIST_THRESHOLD)
         {
             distance++;       // 거리 1 증가
             dist_buffer = 0;  // 버퍼 초기화
-            
+
             if(distance > 99) distance = 0; // 0~99 반복
         }
     }
@@ -146,7 +162,7 @@ void LPIT0_Ch1_IRQHandler(void) // 세그먼트 디스플레이 0.05ms
 	scan_index++;
 	if (scan_index > 5)
 	{
-	    scan_index = 0; 
+	    scan_index = 0;
 	}
 
 	LPIT_MSR |= (1 << TIF1_BIT);
@@ -164,21 +180,24 @@ void LPIT0_Ch2_IRQHandler(void)
 void PORTA_IRQHandler(void)
 {
      // 시동 버튼 (PTA13)이 인터럽트를 발생시켰는지 확인
-     
+
     if (PORTA_PCR13 & (1 << ISF_BIT))
     {
+    	if(input_lock ==0)
+    	{
         if (Start_Flag == 0) //시동 off 상태일때
         {
            Start_Flag = 1; //시동 on
         }
-        else 
+        else
         {
             if(current_state == STATE_P && current_speed==0 )
             {
                 Start_Flag = 0; //시동 on이고 p이면서 속도 0이면 시동 off
             }
         }
-
+        input_lock = 100;
+    	}
         PORTA_PCR13 |= (1 << ISF_BIT);
     }
 
@@ -186,9 +205,9 @@ void PORTA_IRQHandler(void)
 
     if (PORTA_PCR12 & (1 << ISF_BIT))
     {
-        if (Start_Flag == 1) // 시동 on 상태에서만 기어 변경 가능
+        if (Start_Flag == 1 && current_speed==0) // 시동 on 상태 and 속도 0에서만 기어 변경 가능
         {
-            Gear_Flag = 1; 
+            Gear_Flag = 1;
         }
 
         PORTA_PCR12 |= (1 << ISF_BIT);
@@ -199,8 +218,8 @@ void PORTA_IRQHandler(void)
 void PORTC_IRQHandler(void)
 {
     // 가속 버튼 (PTC17)이 인터럽트를 발생시켰는지 확인
-   
-    if (PORTC_PCR17 & (1 << ISF_BIT)) 
+
+    if (PORTC_PCR17 & (1 << ISF_BIT))
     {
         if(Start_Flag ==1)
         {
@@ -222,12 +241,12 @@ void PORTC_IRQHandler(void)
     }
 
     // 브레이크 버튼 (PTC16)이 인터럽트를 발생시켰는지 확인
-   
-    if (PORTC_PCR16 & (1 << ISF_BIT)) 
+
+    if (PORTC_PCR16 & (1 << ISF_BIT))
     {
         if(Start_Flag ==1)
         {
-            if(current_state == STATE_D || current_state == STATE_R)
+            if(current_state == STATE_D || current_state == STATE_R || current_state == STATE_CRUISE )
             {
                 // 브레이크 버튼의 현재 상태 확인 (눌림/떼짐)
                 if ((GPIOC_PDIR & (1 << PTC16)) == 0) // Low = 눌림
@@ -235,6 +254,8 @@ void PORTC_IRQHandler(void)
                     if (Cruise_Flag == 1) // 크루즈 켜져 있으면
                     {
                         Cruise_Flag = 0; // 크루즈 끄기
+                        current_state = STATE_D;
+                        gear = 1;
                     }
                     Accel_Flag = 0;
                     Brake_Flag = 1; // 브레이크 작동
@@ -250,22 +271,32 @@ void PORTC_IRQHandler(void)
 
     // 오토크루즈 버튼 (PTC15)이 인터럽트를 발생시켰는지 확인
 
-    if (PORTC_PCR15 & (1 << ISF_BIT)) 
+    if (PORTC_PCR15 & (1 << ISF_BIT))
     {
         if(Start_Flag == 1)
         {
+        	if(input_lock == 0)
+        	{
             if(Cruise_Flag == 0)
             {
                 if(current_state == STATE_D)
                 {
                     Cruise_Flag = 1;
                     Accel_Flag = 1; // 크루즈 모드 진입 시 가속 유지
+
+                    current_state = STATE_CRUISE;
+                    gear = 3;
                 }
             }
             else
             {
                 Cruise_Flag = 0;
+                current_state = STATE_D;
+                gear = 1;
+                Accel_Flag = 0;
             }
+            input_lock = 30;
+        	}
         }
 
             PORTC_PCR15 |= (1 << ISF_BIT);
