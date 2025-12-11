@@ -17,6 +17,8 @@
 
 // PORT Registers
 #define PORTA_BASE 	(0x40049000)
+#define PORTA_PCR0  *((volatile unsigned*)(PORTA_BASE + 0x0)) // led 5
+#define PORTA_PCR1  *((volatile unsigned*)(PORTA_BASE + 0x4)) // led 4
 #define PORTA_PCR12 *((volatile unsigned*)(PORTA_BASE + 0x30))  //sw4 기어버튼
 #define PORTA_PCR13 *((volatile unsigned*)(PORTA_BASE + 0x34))  //sw5 시동버튼
 
@@ -30,12 +32,15 @@
 #define PORTB_PCR13	*((volatile unsigned*)(PORTB_BASE + 0x34)) //com6
 
 #define PORTC_BASE 	(0x4004B000)
+#define PORTC_PCR12 *((volatile unsigned*)(PORTC_BASE + 0x30)) // 스위치1 (오른쪽 방향)
+#define PORTC_PCR13 *((volatile unsigned*)(PORTC_BASE + 0x34)) // 스위치2 (왼쪽 방향)
 #define PORTC_PCR15 *((volatile unsigned*)(PORTC_BASE + 0x3C)) //sw1 오토크루즈 버튼
 #define PORTC_PCR16 *((volatile unsigned*)(PORTC_BASE + 0x40)) //sw2 브레이크 버튼
 #define PORTC_PCR17 *((volatile unsigned*)(PORTC_BASE + 0x44)) //sw3 가속버튼
 
 #define PORTD_BASE 	(0x4004C000)
 #define PORTD_PCR10 *((volatile unsigned*)(PORTD_BASE + 0x28)) //port D 10 - DC motor 제어 (PWM)
+#define PORTD_PCR11 *((volatile unsigned*)(PORTD_BASE + 0x2C)) //port D 11 - servo motor 제어 (PWM)
 #define PORTD_PCR3  *((volatile unsigned*)(PORTD_BASE + 0xC))  //seg a
 #define PORTD_PCR5	*((volatile unsigned*)(PORTD_BASE + 0x14)) //seg b
 #define PORTD_PCR8  *((volatile unsigned*)(PORTD_BASE + 0x20)) //seg c
@@ -45,10 +50,17 @@
 #define PORTD_PCR14	*((volatile unsigned*)(PORTD_BASE + 0x38)) //seg g
 
 #define PORTE_BASE 	(0x4004D000)
+#define PORTE_PCR14 *((volatile unsigned*)(PORTE_BASE + 0x38)) // led 3
+#define PORTE_PCR15 *((volatile unsigned*)(PORTE_BASE + 0x3C)) // led 2
+#define PORTE_PCR16 *((volatile unsigned*)(PORTE_BASE + 0x40)) // led 1
 
+#define PTA0    0 // led 5
+#define PTA1    1 // led 4
 #define PTA12 12 // sw4 기어버튼
 #define PTA13 13 // sw5 시동버튼
 
+#define PTC12   12  // 스위치1 (오른쪽 방향)
+#define PTC13   13  // 스위치2 (왼쪽 방향)
 #define PTC15 15 // sw1 오토크루즈 버튼
 #define PTC16 16 // sw2 브레이크 버튼
 #define PTC17 17 // sw3 가속버튼
@@ -68,15 +80,22 @@
 #define PTD14	14	//F
 #define	PTD3	3	//G
 
+#define PTE14   14 // led 3
+#define PTE15   15 // led 2
+#define PTE16   16 // led 1
+
 #define MUX_BITS 	8
 
 // FTM2 Registers
 #define FTM2_BASE 	(0x4003A000)
 #define FTM2_SC 	*((volatile unsigned*)(FTM2_BASE + 0X0))
 #define FTM2_MOD 	*((volatile unsigned*)(FTM2_BASE + 0X8))
-#define FTM2_C0SC 	*((volatile unsigned*)(FTM2_BASE + 0XC))
-#define FTM2_C0V 	*((volatile unsigned*)(FTM2_BASE + 0X10))
+#define FTM2_C0SC 	*((volatile unsigned*)(FTM2_BASE + 0XC)) // FTM2 CH0
+#define FTM2_C0V 	*((volatile unsigned*)(FTM2_BASE + 0X10)) // FTM2 CH0
 #define FTM2_CNTIN 	*((volatile unsigned*)(FTM2_BASE + 0X4C))
+
+#define FTM2_C1SC   *((volatile unsigned*)(FTM2_BASE + 0X14)) // FTM2 CH1
+#define FTM2_C1V    *((volatile unsigned*)(FTM2_BASE + 0X18)) // FTM2 CH1
 
 #define PWMEN0_BIT 	16
 #define CLKS_BITS 	3
@@ -175,5 +194,11 @@
 #define GPIOD_PDDR (*((volatile unsigned*)(GPIOD_BASE + 0x14)))
 #define GPIOD_PDIR (*((volatile unsigned*)(GPIOD_BASE + 0x10)))
 
+#define GPIOE_BASE  (0x400FF100)
+#define GPIOE_PSOR (*((volatile unsigned*)(GPIOE_BASE + 0x4)))
+#define GPIOE_PCOR (*((volatile unsigned*)(GPIOE_BASE + 0x8)))
+#define GPIOE_PTOR (*((volatile unsigned*)(GPIOE_BASE + 0xC)))
+#define GPIOE_PDDR (*((volatile unsigned*)(GPIOE_BASE + 0x14)))
+#define GPIOE_PDIR (*((volatile unsigned*)(GPIOE_BASE + 0x10)))
 
 #endif

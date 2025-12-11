@@ -93,9 +93,9 @@ void FTM2_CH0_PWM(void)
 
 	FTM2_SC |= (1<<PWMEN0_BIT);
 	FTM2_SC &= ~((0b111)<<PS_BITS);
-	FTM2_SC |= ((0b001)<<PS_BITS);
+	FTM2_SC |= ((0b010)<<PS_BITS); // 8MHZ / 4 = 2MHZ
 
-	FTM2_MOD = 40000 -1; // 80MHz / 2 / 40000 = 1kHz
+	FTM2_MOD   = 40000 - 1; //2MHz / 40000 = 50Hz (20ms 필수)
 	FTM2_CNTIN = 0;
 
 	FTM2_C0SC |= (1<<MSB_BIT);

@@ -3,6 +3,7 @@
 #include "clocks_and_modes.h"
 #include "Motor.h"
 #include "seven_segment.h"
+#include "turn.h"
 
 static uint32_t dist_buffer = 0;
 // [튜닝 포인트] 이 숫자로 거리 올라가는 속도를 조절합니다.
@@ -57,7 +58,7 @@ void LPIT0_init(void)
     // ch2
     LPIT_MIER |= (1<<TIE2_BIT); // Enable Timer 1 interrupt
 
-    LPIT_TVAL2 = 4000000; // 80MHz / 2 / 4000000 = 10Hz -> 100ms
+    LPIT_TVAL2 = 2000000; // 80MHz / 2 / 2000000 = 20Hz -> 5ms
 
 	LPIT_TCTRL2 &= ~((0b11)<<MODE_BITS);
 	LPIT_TCTRL2 |= (1<<T_EN_BIT);
@@ -170,8 +171,43 @@ void LPIT0_Ch1_IRQHandler(void) // 세그먼트 디스플레이 0.05ms
 
 void LPIT0_Ch2_IRQHandler(void)
 {
-    // 1ms마다 실행되는 인터럽트 핸들러
-    // 필요한 작업 수행
+    if (mode == 2) 
+    {
+    // 왼쪽 방향 모드 (C13)
+    // E16 → E15 → E14 → A0 → A1
+        switch(step) 
+        {
+            case 0: GPIOE_PTOR |= (1<<PTE16); break;  // E16
+            case 1: GPIOE_PTOR |= (1<<PTE15); break;  // E15
+            case 2: GPIOE_PTOR |= (1<<PTE14); break;  // E14
+            case 3: GPIOA_PTOR |= (1<<PTA0);  break;  // A0
+            case 4: GPIOA_PTOR |= (1<<PTA1);  break;  // A1
+        }
+        step++;
+        if (step >= 5) step = 0;
+    }
+
+    else if (mode == 1) 
+    {
+        // 오른쪽 방향 모드 (C12)
+        // A1 → A0 → E14 → E15 → E16
+        switch(step) 
+        {
+            case 0: GPIOA_PTOR |= (1<<PTA1);  break;  // A1
+            case 1: GPIOA_PTOR |= (1<<PTA0);  break;  // A0
+            case 2: GPIOE_PTOR |= (1<<PTE14); break;  // E14
+            case 3: GPIOE_PTOR |= (1<<PTE15); break;  // E15
+            case 4: GPIOE_PTOR |= (1<<PTE16); break;  // E16
+        }
+        step++;
+        if (step >= 5) step = 0;
+    }
+
+    else 
+    {
+        // mode == 0 (정지 상태)
+        step = 0;
+    }
 
     LPIT_MSR |= (1<<TIF2_BIT); // Flag Clear
 }
