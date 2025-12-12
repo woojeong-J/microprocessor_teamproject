@@ -120,12 +120,19 @@ void LPIT0_Ch0_IRQHandler(void) //차량 제어 10ms
         if (dist_buffer >= DIST_THRESHOLD)
         {
             distance++;       // 거리 1 증가
-            if(distance > 60) GPIOD_PCOR = (1<<PTD15); //led red on
             dist_buffer = 0;  // 버퍼 초기화
 
             if(distance > 99) distance = 0; // 0~99 반복
         }
     }
+    if(distance > 60)
+    {
+    	GPIOD_PCOR = (1<<PTD15); //led red on
+    }
+    else
+   	{
+        GPIOD_PSOR = (1<<PTD15);
+   	}
 
 	LPIT_MSR |= (1<<TIF0_BIT);
 }
