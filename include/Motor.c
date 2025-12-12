@@ -61,6 +61,10 @@ void PORT_init_Motor(void)
 	PORTA_PCR13 |= (0b1000<<IRQC_BITS); //logic 0
 	PORTA_PCR13 |= (1<<1) | (1<<0);
 	GPIOA_PDDR &= ~(1<<PTA13); // Input
+	// LED red
+	PORTD_PCR15 &= ~((0b111)<<MUX_BITS);
+	PORTD_PCR15 |= (1<<MUX_BITS);   //led red
+	GPIOD_PDDR |= (1<<PTD15);  // 출력
 }
 
 void ADC0_init(void)

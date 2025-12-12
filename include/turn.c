@@ -9,6 +9,7 @@
 volatile int mode = 0;   // 0=정지(center), 1=왼쪽(C13), 2=오른쪽(C12)
 volatile int step = 0;   // 0~4 LED 순서
 
+
 /* ================================
  * PORT 초기화: 스위치 + LED + 서보핀
  * ================================ */
@@ -59,10 +60,6 @@ void PORT_init_turn(void)
     PCC_PORTD |= (1<<CGC_BIT);
     PORTD_PCR11 &= ~((0b111)<<MUX_BITS);
     PORTD_PCR11 |=  ((0b010)<<MUX_BITS);   // ALT2: FTM2_CH1
-
-    PORTD_PCR15 &= ~((0b111)<<MUX_BITS);
-    PORTD_PCR15 |=  (1<<MUX_BITS);   //led red
-    GPIOD_PDDR |= (1<<PTD15);  // 출력
 
     /* 처음에는 LED 모두 OFF */
     GPIOE_PSOR |= (1<<PTE14)|(1<<PTE15)|(1<<PTE16);

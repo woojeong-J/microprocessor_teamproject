@@ -26,6 +26,7 @@ extern volatile int gear;
 extern volatile int current_speed;
 extern volatile int Accel_Flag;
 extern volatile int Brake_Flag;
+extern volatile int distance;
 extern volatile uint32_t adcResult;
 extern volatile CarState_t current_state;
 
