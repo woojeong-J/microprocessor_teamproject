@@ -13,8 +13,6 @@
 
 volatile int gear; // 디스플레이용 변수 (0:P, 1:D, 2:R, 3:C)
 
-volatile int fuel = 99;
-
 
 // 현재 상태 변수
 volatile CarState_t current_state = STATE_OFF;
@@ -79,7 +77,7 @@ int main(void)
 	  	}
 
 		// 정지 상태(mode == 0)이면 LED 항상 OFF 유지
-        if (mode == 0) 
+        if (mode == 0)
 		{
             GPIOE_PSOR |= (1<<PTE14)|(1<<PTE15)|(1<<PTE16);
             GPIOA_PSOR |= (1<<PTA0)|(1<<PTA1);
@@ -87,11 +85,5 @@ int main(void)
         // mode 1,2 일 때는
         // LED 토글은 LPIT0_Ch0_IRQHandler에서 주기적으로 실행
         // 서보 각도 변경은 PORTC_IRQHandler에서 버튼 눌릴 때만 실행
-		fuel = 99 - distance;
-		if(fuel < 11)
-		{
-			GPIOD_PCOR = (1<<PTD15); //led red on
-		}
-		
     } // end for
 }

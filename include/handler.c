@@ -120,6 +120,7 @@ void LPIT0_Ch0_IRQHandler(void) //차량 제어 10ms
         if (dist_buffer >= DIST_THRESHOLD)
         {
             distance++;       // 거리 1 증가
+            if(distance > 60) GPIOD_PCOR = (1<<PTD15); //led red on
             dist_buffer = 0;  // 버퍼 초기화
 
             if(distance > 99) distance = 0; // 0~99 반복
@@ -201,6 +202,13 @@ void LPIT0_Ch2_IRQHandler(void)
         }
         step++;
         if (step >= 5) step = 0;
+    }
+    else if (mode == 3)
+    {
+        // 비상등 모드
+        // 모든 LED 토글
+        GPIOE_PCOR |= (1<<PTE14)|(1<<PTE15)|(1<<PTE16);
+        GPIOA_PCOR |= (1<<PTA0)|(1<<PTA1);
     }
 
     else 
@@ -321,11 +329,13 @@ void PORTC_IRQHandler(void)
                         current_state = STATE_D;
                         gear = 1;
                     }
+                    mode = 3; // 비상등 모드 진입
                     Accel_Flag = 0;
                     Brake_Flag = 1; // 브레이크 작동
                 }
                 else // High = 떼짐
                 {
+                    mode = 0; // 비상등 모드 해제
                     Brake_Flag = 0; // 브레이크 해제
                 }
             }
