@@ -253,6 +253,34 @@ void PORTA_IRQHandler(void)
 
 void PORTC_IRQHandler(void)
 {
+    // C12 눌림 → 오른쪽 방향 모드 토글
+    if (PORTC_PCR13 & (1<<ISF_BIT)) {
+        if (mode != 2) {
+            mode = 2;                  // 오른쪽 모드
+            step = 0;
+            FTM2_C1V = SERVO_RIGHT;    // 서보 오른쪽
+        } else {
+            mode = 0;                  // 정지
+            step = 0;
+            FTM2_C1V = SERVO_CENTER;   // 서보 센터
+        }
+        PORTC_PCR13 |= (1<<ISF_BIT);   // ISF 플래그 클리어
+    }
+
+    // C13 눌림 → 왼쪽 방향 모드 토글
+    if (PORTC_PCR12 & (1<<ISF_BIT)) {
+        if (mode != 1) {
+            mode = 1;                  // 왼쪽 모드
+            step = 0;
+            FTM2_C1V = SERVO_LEFT;     // 서보 왼쪽
+        } else {
+            mode = 0;                  // 정지
+            step = 0;
+            FTM2_C1V = SERVO_CENTER;   // 서보 센터
+        }
+        PORTC_PCR12 |= (1<<ISF_BIT);   // ISF 플래그 클리어
+    }
+
     // 가속 버튼 (PTC17)이 인터럽트를 발생시켰는지 확인
 
     if (PORTC_PCR17 & (1 << ISF_BIT))

@@ -49,6 +49,8 @@
 #define PORTD_PCR13	*((volatile unsigned*)(PORTD_BASE + 0x34)) //seg f
 #define PORTD_PCR14	*((volatile unsigned*)(PORTD_BASE + 0x38)) //seg g
 
+#define PORTD_PCR15    *((volatile unsigned*)(PORTD_BASE + 0x3C)) //led red
+
 #define PORTE_BASE 	(0x4004D000)
 #define PORTE_PCR14 *((volatile unsigned*)(PORTE_BASE + 0x38)) // led 3
 #define PORTE_PCR15 *((volatile unsigned*)(PORTE_BASE + 0x3C)) // led 2
@@ -80,6 +82,8 @@
 #define PTD14	14	//F
 #define	PTD3	3	//G
 
+#define PTD15   15  //led red
+
 #define PTE14   14 // led 3
 #define PTE15   15 // led 2
 #define PTE16   16 // led 1
@@ -98,6 +102,7 @@
 #define FTM2_C1V    *((volatile unsigned*)(FTM2_BASE + 0X18)) // FTM2 CH1
 
 #define PWMEN0_BIT 	16
+#define PWMEN1_BIT 	17
 #define CLKS_BITS 	3
 #define PS_BITS 	0
 #define MSB_BIT 	5

@@ -60,6 +60,10 @@ void PORT_init_turn(void)
     PORTD_PCR11 &= ~((0b111)<<MUX_BITS);
     PORTD_PCR11 |=  ((0b010)<<MUX_BITS);   // ALT2: FTM2_CH1
 
+    PORTD_PCR15 &= ~((0b111)<<MUX_BITS);
+    PORTD_PCR15 |=  (1<<MUX_BITS);   //led red
+    GPIOD_PDDR |= (1<<PTD15);  // 출력
+
     /* 처음에는 LED 모두 OFF */
     GPIOE_PSOR |= (1<<PTE14)|(1<<PTE15)|(1<<PTE16);
     GPIOA_PSOR |= (1<<PTA0)|(1<<PTA1);
@@ -68,7 +72,7 @@ void PORT_init_turn(void)
 /* ================================
  * FTM2 CH0 PWM (서보 출력)
  * ================================ */
-void FTM2_CH1_PWM_init(void)
+void FTM2_CH1_PWM(void)
 {
     PCC_FTM2 &= ~(1<<CGC_BIT);
     PCC_FTM2 &= ~((0b111)<<PCS_BITS);
@@ -76,7 +80,7 @@ void FTM2_CH1_PWM_init(void)
     PCC_FTM2 |=  (1<<CGC_BIT);
 
     // PWM enable (실습 코드 스타일 유지)
-    FTM2_SC |= (1<<PWMEN0_BIT);
+    FTM2_SC |= (1<<PWMEN1_BIT);
 
     // 프리스케일러 설정: /4
     FTM2_SC &= ~((0b111)<<PS_BITS);

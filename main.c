@@ -13,6 +13,9 @@
 
 volatile int gear; // 디스플레이용 변수 (0:P, 1:D, 2:R, 3:C)
 
+volatile int fuel = 99;
+
+
 // 현재 상태 변수
 volatile CarState_t current_state = STATE_OFF;
 
@@ -84,6 +87,11 @@ int main(void)
         // mode 1,2 일 때는
         // LED 토글은 LPIT0_Ch0_IRQHandler에서 주기적으로 실행
         // 서보 각도 변경은 PORTC_IRQHandler에서 버튼 눌릴 때만 실행
+		fuel = 99 - distance;
+		if(fuel < 11)
+		{
+			GPIOD_PCOR = (1<<PTD15); //led red on
+		}
 		
     } // end for
 }
